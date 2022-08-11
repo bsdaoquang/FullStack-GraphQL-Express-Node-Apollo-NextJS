@@ -7,8 +7,8 @@ const connectDB = async () => {
   await createConnection({
     type: 'postgres',
     database: 'postgres',
-    username: 'postgres',
-    password: 'admin',
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
     logging: true,
     synchronize: true,
   })
