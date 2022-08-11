@@ -1,4 +1,11 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm'
 
 @Entity() //tạo 1 bảng trong csdl
 export class User extends BaseEntity {
@@ -16,9 +23,9 @@ export class User extends BaseEntity {
   @Column()
   password!: string
 
-  @Column()
+  @CreateDateColumn() //tự động nhận date hiện tại
   createAt: Date
 
-  @Column()
+  @UpdateDateColumn()
   updatedAt: Date
 }
