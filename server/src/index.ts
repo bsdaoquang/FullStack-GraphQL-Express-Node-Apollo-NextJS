@@ -2,7 +2,10 @@ require('dotenv').config()
 import 'reflect-metadata'
 import express from 'express'
 import { createConnection } from 'typeorm'
-import { Post, User } from './entites'
+import { buildSchema } from 'type-graphql'
+import { ApolloServer } from 'apollo-server-express'
+import { HelloResolver, UserResolver } from './resolvers'
+import { Post, User } from './entities'
 
 const connectDB = async () => {
   await createConnection({
@@ -17,7 +20,24 @@ const connectDB = async () => {
 
   const app = express()
 
-  app.listen(4000, () => console.log('Server stated on port 4000'))
+  const aplloServer = new ApolloServer({
+    schema: await buildSchema({
+      resolvers: [HelloResolver, UserResolver],
+      validate: false,
+    }),
+  })
+
+  await aplloServer.start()
+
+  aplloServer.applyMiddleware({ app, cors: false })
+
+  const PORT = process.env.PORT || 4000
+
+  app.listen(PORT, () =>
+    console.log(
+      `Server started on ${PORT}, GraphQL server started on localhost:${PORT}${aplloServer.graphqlPath}`,
+    ),
+  )
 }
 
 connectDB().catch((error) => console.log(error))
