@@ -1,15 +1,19 @@
 import argon2 from 'argon2'
 import { User } from '../entities'
 import { Arg, Mutation, Resolver } from 'type-graphql'
-import { UserMutationResponse } from '../types'
+import { RegisterInput, UserMutationResponse } from '../types'
 
 @Resolver()
 export class UserResolver {
   @Mutation((_returns) => UserMutationResponse, { nullable: true })
   async register(
-    @Arg('email') email: string,
-    @Arg('username') username: string,
-    @Arg('password') password: string,
+    // @Arg('email') email: string,
+    // @Arg('username') username: string,
+    // @Arg('password') password: string,
+
+    // next step thu gon code
+    //if form have 50 field, cant create 50 line in code -->
+    @Arg('registerInput') { email, username, password }: RegisterInput,
   ): Promise<User | UserMutationResponse> {
     try {
       const existingUser = await User.findOne<User>({
