@@ -1,7 +1,12 @@
 import argon2 from 'argon2'
 import { User } from '../entities'
-import { Arg, Mutation, Resolver } from 'type-graphql'
-import { LoginInput, RegisterInput, UserMutationResponse } from '../types'
+import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
+import {
+  Context,
+  LoginInput,
+  RegisterInput,
+  UserMutationResponse,
+} from '../types'
 import { validateRegisterInput } from '../utils/validateRegisterInput'
 
 @Resolver()
@@ -78,6 +83,9 @@ export class UserResolver {
   @Mutation((_returns) => UserMutationResponse)
   async login(
     @Arg('loginInput') { usernameOrEmail, password }: LoginInput,
+
+    //@Ctx is context
+    @Ctx() { req }: Context,
   ): Promise<UserMutationResponse> {
     try {
       const existingUser = await User.findOne({
@@ -114,6 +122,10 @@ export class UserResolver {
               },
             ],
           }
+
+        //save session userId === existingUser.id
+        //create session and return cookie
+        req.session.userId = existingUser.id
 
         return {
           code: 200,

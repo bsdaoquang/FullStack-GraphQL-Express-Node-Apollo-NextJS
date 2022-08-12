@@ -10,6 +10,7 @@ import mongoose from 'mongoose'
 import MongoStore from 'connect-mongo'
 import session from 'express-session'
 import { COOKIE_NAME, __prop__ } from './constants'
+import { Context } from './types'
 
 const connectDB = async () => {
   await createConnection({
@@ -53,6 +54,9 @@ const connectDB = async () => {
       resolvers: [HelloResolver, UserResolver],
       validate: false,
     }),
+
+    //create req to get from every where
+    context: ({ req, res }): Context => ({ req, res }),
   })
 
   await aplloServer.start()
