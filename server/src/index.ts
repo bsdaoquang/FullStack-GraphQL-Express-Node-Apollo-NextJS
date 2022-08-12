@@ -6,6 +6,10 @@ import { buildSchema } from 'type-graphql'
 import { ApolloServer } from 'apollo-server-express'
 import { HelloResolver, UserResolver } from './resolvers'
 import { Post, User } from './entities'
+import mongoose from 'mongoose'
+import MongoStore from 'connect-mongo'
+import session from 'express-session'
+import { COOKIE_NAME, __prop__ } from './constants'
 
 const connectDB = async () => {
   await createConnection({
@@ -19,6 +23,30 @@ const connectDB = async () => {
   })
 
   const app = express()
+
+  //session cookie store
+  //MonggoDB connection
+  const monggoDBUrl = `mongodb+srv://${process.env.DB_MONGO_SECTION_USERNAME}:${process.env.DB_MONGO_SECTION_PASSWORD}@fullstackgraphqlsecctio.eqtznbe.mongodb.net/?retryWrites=true&w=majority`
+  await mongoose.connect(monggoDBUrl)
+  //console.log(`MongoDB connected`)
+
+  app.use(
+    session({
+      name: COOKIE_NAME,
+      store: MongoStore.create({
+        mongoUrl: monggoDBUrl,
+      }),
+      cookie: {
+        maxAge: 1000 * 60 * 60, //on hour,
+        httpOnly: true, //js frond end can't read
+        secure: __prop__, //cookie only work on https
+        sameSite: 'lax', //project
+      },
+      secret: process.env.SESSION_SECRET as string,
+      saveUninitialized: false,
+      resave: false,
+    }),
+  )
 
   const aplloServer = new ApolloServer({
     schema: await buildSchema({
