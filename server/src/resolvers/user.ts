@@ -9,9 +9,9 @@ export class UserResolver {
     @Arg('email') email: string,
     @Arg('username') username: string,
     @Arg('password') password: string,
-  ) {
+  ): Promise<User | null> {
     try {
-      const existingUser = await User.findOne({ username })
+      const existingUser = await User.findOne<User>({ where: [{ username }] })
       if (existingUser) {
         return null
       } else {

@@ -29,13 +29,15 @@ const connectDB = async () => {
 
   await aplloServer.start()
 
+  app.set('trust proxy', 1)
+
   aplloServer.applyMiddleware({ app, cors: false })
 
   const PORT = process.env.PORT || 4000
 
   app.listen(PORT, () =>
     console.log(
-      `Server started on ${PORT}, GraphQL server started on localhost:${PORT}${aplloServer.graphqlPath}`,
+      `Server started on ${PORT}, GraphQL server started on localhost: http://localhost:${PORT}${aplloServer.graphqlPath}`,
     ),
   )
 }
