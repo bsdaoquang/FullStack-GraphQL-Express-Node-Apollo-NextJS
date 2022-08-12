@@ -8,6 +8,7 @@ import {
   UserMutationResponse,
 } from '../types'
 import { validateRegisterInput } from '../utils/validateRegisterInput'
+import { COOKIE_NAME } from '../constants'
 
 @Resolver()
 export class UserResolver {
@@ -142,5 +143,21 @@ export class UserResolver {
         message: `Interval server error: ${error.message}`,
       }
     }
+  }
+
+  @Mutation((_returns) => Boolean)
+  logout(@Ctx() { req, res }: Context): Promise<boolean> {
+    return new Promise((resolve, _reject) => {
+      res.clearCookie(COOKIE_NAME)
+
+      req.session.destroy((error) => {
+        if (error) {
+          console.log('Error destroy cookie')
+          resolve(false)
+        }
+
+        resolve(true)
+      })
+    })
   }
 }
