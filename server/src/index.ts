@@ -29,8 +29,6 @@ const connectDB = async () => {
 
   await aplloServer.start()
 
-  app.set('trust proxy', 1)
-
   aplloServer.applyMiddleware({ app, cors: false })
 
   const PORT = process.env.PORT || 4000
