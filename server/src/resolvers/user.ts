@@ -2,6 +2,7 @@ import argon2 from 'argon2'
 import { User } from '../entities'
 import { Arg, Mutation, Resolver } from 'type-graphql'
 import { RegisterInput, UserMutationResponse } from '../types'
+import { validateRegisterInput } from '../utils/validateRegisterInput'
 
 @Resolver()
 export class UserResolver {
@@ -13,9 +14,22 @@ export class UserResolver {
 
     // next step thu gon code
     //if form have 50 field, cant create 50 line in code -->
-    @Arg('registerInput') { email, username, password }: RegisterInput,
+    @Arg('registerInput') registerInput: RegisterInput,
   ): Promise<User | UserMutationResponse> {
+    //check validate
+    const validateRegisterInputError = validateRegisterInput(registerInput)
+
+    if (validateRegisterInputError !== null) {
+      return {
+        code: 400,
+        success: false,
+        ...validateRegisterInputError,
+      }
+    }
+
     try {
+      const { username, email, password } = registerInput
+
       const existingUser = await User.findOne<User>({
         where: [{ username }, { email }], //check username and email is existing
       })
