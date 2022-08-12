@@ -23,6 +23,7 @@ export class UserResolver {
     // next step thu gon code
     //if form have 50 field, cant create 50 line in code -->
     @Arg('registerInput') registerInput: RegisterInput,
+    @Ctx() { req }: Context,
   ): Promise<User | UserMutationResponse> {
     //check validate
     const validateRegisterInputError = validateRegisterInput(registerInput)
@@ -55,18 +56,21 @@ export class UserResolver {
         }
       } else {
         const hashPass = await argon2.hash(password)
-        const newUser = User.create({
+        let newUser = User.create({
           username,
           password: hashPass,
           email,
         })
+
+        newUser = await User.save(newUser)
+        req.session.userId = newUser.id
 
         //regis success
         return {
           code: 200,
           success: true,
           message: 'Register successfully',
-          user: await User.save(newUser),
+          user: newUser,
         }
       }
     } catch (error) {
