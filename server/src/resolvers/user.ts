@@ -1,12 +1,14 @@
 import argon2 from 'argon2'
 import { User } from '../entities'
 import { Arg, Mutation, Resolver } from 'type-graphql'
-import { RegisterInput, UserMutationResponse } from '../types'
+import { LoginInput, RegisterInput, UserMutationResponse } from '../types'
 import { validateRegisterInput } from '../utils/validateRegisterInput'
 
 @Resolver()
 export class UserResolver {
-  @Mutation((_returns) => UserMutationResponse, { nullable: true })
+  //Register
+  //dont need set nonable is true because has user
+  @Mutation((_returns) => UserMutationResponse)
   async register(
     // @Arg('email') email: string,
     // @Arg('username') username: string,
@@ -67,6 +69,65 @@ export class UserResolver {
         code: 500,
         message: `Internal server error: ${error.message}`,
         success: false,
+      }
+    }
+  }
+
+  //Login
+  //@Mutation((_returns) => )
+  @Mutation((_returns) => UserMutationResponse)
+  async login(
+    @Arg('loginInput') { usernameOrEmail, password }: LoginInput,
+  ): Promise<UserMutationResponse> {
+    try {
+      const existingUser = await User.findOne({
+        where: [{ username: usernameOrEmail }],
+      })
+
+      if (!existingUser) {
+        return {
+          code: 400,
+          success: false,
+          message: 'User not found',
+          errors: [
+            {
+              field: 'usernameOrEmail',
+              message: 'username and/or password incorrect',
+            },
+          ],
+        }
+      } else {
+        const passwordValid = await argon2.verify(
+          existingUser.password,
+          password,
+        )
+
+        if (!passwordValid)
+          return {
+            code: 400,
+            success: false,
+            message: 'Login failse',
+            errors: [
+              {
+                field: password,
+                message: 'username/email and/or password is not correct',
+              },
+            ],
+          }
+
+        return {
+          code: 200,
+          success: true,
+          message: 'Login successful',
+          user: existingUser,
+        }
+      }
+    } catch (error) {
+      console.log(error)
+      return {
+        code: 500,
+        success: false,
+        message: `Interval server error: ${error.message}`,
       }
     }
   }
