@@ -4,7 +4,7 @@ import express from 'express'
 import { createConnection } from 'typeorm'
 import { buildSchema } from 'type-graphql'
 import { ApolloServer } from 'apollo-server-express'
-import { HelloResolver, UserResolver } from './resolvers'
+import { HelloResolver, PostResolver, UserResolver } from './resolvers'
 import { Post, User } from './entities'
 import mongoose from 'mongoose'
 import MongoStore from 'connect-mongo'
@@ -27,9 +27,9 @@ const connectDB = async () => {
 
   //session cookie store
   //MonggoDB connection
-  const monggoDBUrl = `mongodb+srv://${process.env.DB_MONGO_SECTION_USERNAME}:${process.env.DB_MONGO_SECTION_PASSWORD}@fullstackgraphqlsecctio.eqtznbe.mongodb.net/?retryWrites=true&w=majority`
+  const monggoDBUrl = `mongodb+srv://${process.env.DB_MONGO_SECTION_USERNAME}:${process.env.DB_MONGO_SECTION_PASSWORD}@sessionfullstackgraphql.ykqhkvs.mongodb.net/?retryWrites=true&w=majority`
   await mongoose.connect(monggoDBUrl)
-  //console.log(`MongoDB connected`)
+  console.log(`MongoDB connected`)
 
   app.use(
     session({
@@ -51,7 +51,7 @@ const connectDB = async () => {
 
   const aplloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver],
+      resolvers: [HelloResolver, UserResolver, PostResolver],
       validate: false,
     }),
 
