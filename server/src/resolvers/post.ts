@@ -1,26 +1,17 @@
-import { AuthenticationError } from 'apollo-server-express'
-import { Arg, Ctx, ID, Mutation, Query, Resolver } from 'type-graphql'
+import { Arg, ID, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql'
 import { Post } from '../entities'
-import {
-  Context,
-  NewPostForm,
-  PostMutationResponse,
-  UpdatePostForm,
-} from '../types'
+import { CheckLogin } from '../middleware/checkLogin'
+import { NewPostForm, PostMutationResponse, UpdatePostForm } from '../types'
 
 @Resolver()
 export class PostResolver {
   //create a new post
   @Mutation((_return) => PostMutationResponse)
+  @UseMiddleware(CheckLogin)
   async createNewPost(
     @Arg('NewPostForm') { title, text }: NewPostForm,
-    @Ctx() { req }: Context,
   ): Promise<Post | PostMutationResponse> {
     try {
-      if (!req.session.userId) {
-        throw new AuthenticationError('Not authentication to this reques')
-      }
-
       let newPost = Post.create({
         title,
         text,
@@ -74,15 +65,11 @@ export class PostResolver {
 
   //Update post
   @Mutation((_return) => PostMutationResponse)
+  @UseMiddleware(CheckLogin)
   async updatePost(
     @Arg('updatePostForm') { id, title, text }: UpdatePostForm,
-    @Ctx() { req }: Context,
   ): Promise<PostMutationResponse> {
     try {
-      if (!req.session.userId) {
-        throw new AuthenticationError('You need login to update post')
-      }
-
       //find post
       const post = await Post.findOne({
         where: [{ id }],
@@ -119,16 +106,12 @@ export class PostResolver {
   }
 
   @Mutation((_return) => PostMutationResponse)
+  @UseMiddleware(CheckLogin)
   async deletePost(
     @Arg('id', (_type) => ID) id: number,
-    @Ctx() { req }: Context,
   ): Promise<PostMutationResponse> {
     //find post
     try {
-      if (!req.session.userId) {
-        throw new AuthenticationError('You need login to delete post')
-      }
-
       const post = await Post.findOne({
         where: [{ id }],
       })
