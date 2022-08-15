@@ -27,7 +27,7 @@ const connectDB = async () => {
 
   //session cookie store
   //MonggoDB connection
-  const monggoDBUrl = `mongodb+srv://${process.env.DB_MONGO_SECTION_USERNAME}:${process.env.DB_MONGO_SECTION_PASSWORD}@sessionfullstackgraphql.ykqhkvs.mongodb.net/?retryWrites=true&w=majority`
+  const monggoDBUrl = `mongodb+srv://${process.env.DB_MONGO_SECTION_USERNAME}:${process.env.DB_MONGO_SECTION_PASSWORD}@fullstackgraphqldemo.uuj0dai.mongodb.net/?retryWrites=true&w=majority`
   await mongoose.connect(monggoDBUrl)
   console.log(`MongoDB connected`)
 

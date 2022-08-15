@@ -12,9 +12,12 @@
     "@chakra-ui/react": "^2.2.6",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "antd": "^4.22.4",
+    "bootstrap": "^5.2.0",
     "framer-motion": "^6",
     "next": "12.2.5",
     "react": "18.2.0",
+    "react-bootstrap": "^2.5.0",
     "react-dom": "18.2.0"
   },
   "devDependencies": {
