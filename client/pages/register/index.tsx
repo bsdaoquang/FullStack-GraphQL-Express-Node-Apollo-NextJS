@@ -1,12 +1,11 @@
-import { Editable, EditableInput, EditablePreview } from '@chakra-ui/react'
+import { Card, Form, Input } from 'antd'
+import { Container, Row } from 'react-bootstrap'
 
 const Register = () => {
   return (
-    // Click the text to edit
-    <Editable defaultValue="Take some chakra">
-      <EditablePreview />
-      <EditableInput />
-    </Editable>
+    <Container>
+      <h1>afhkj</h1>
+    </Container>
   )
 }
 
